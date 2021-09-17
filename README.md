@@ -9,11 +9,12 @@
 ### Daftar isi
 
 - [Deskripsi](#description)
-- [Feature Engineering](#feature-engineering)
-- [Feature Selection](#feature-selection)
-- [Develop Model](#develop-model)
+- [Preprocessing Data](#preprocessing-data)
+- [Artificial Neural Network](#artificial-neural-network)
 - [Evaluasi Statistik](#evaluasi-statistik)
-- [Produk Final](#produk-final)
+- [Teknik Under Sampling](#teknik-under-sampling)
+- [Evaluasi Statistik Teknik Under Sampling](#Evaluasi-statistik-teknik-under-sampling)
+- [Pengujian Model Awal dan Under Sampling](pengujian-model-awal-dan-under-sampling)
 - [Tentang Penulis](#tentang-penulis)
 
 ---
@@ -31,8 +32,10 @@ Proyek ini memiliki objektif untuk membantu perusahaan fintech untuk mengklasifi
 [Back To The Top](#Klasifikasi-menggunakan-logistic-regression)
 
 ---
-## Feature Engineering
-[**Feature Engineering**](http://belajardatascience.blogspot.com/2018/05/feature-engineering.html) adalah bagaimana kita menggunakan pengetahuan kita dalam memilih features atau membuat features baru agar model machine learning dapat bekerja lebih akurat dalam memecahkan masalah.
+## Preprocessing Data
+
+#### Features Engineering & Selection
+[**Feature Engineering**](http://belajardatascience.blogspot.com/2018/05/feature-engineering.html) adalah bagaimana kita menggunakan pengetahuan kita dalam membuat *feature* baru atau sekedar memodifikasinya sedangkan **Features Selection** adalah proses memilih features baik menggabungkan beberapa *feature* atau membuang sebagian *feature*. Kedua metode dimaksudkan agar model machine learning dapat bekerja lebih akurat dalam memecahkan masalah.
 
 #### Mengimpor *Library* dan data
 ```python
@@ -45,14 +48,17 @@ data_ku = pd.read_csv('data_kartu_kredit.csv');
 data_ku.shape
 
 ```
-#### Standarisasi Kolom *Amount*
+#### Features Engineering
+Standarisasi Kolom *Amount*
 ```python
 from sklearn.preprocessing import StandardScaler
 data_ku['standar'] = StandardScaler().fit_transform(data_ku['Amount'].values.reshape(-1,1))
+```
+#### Features Selection
 
+```python
 y = np.array(data_ku.iloc[:,-2])
 X = np.array(data_ku.drop(['Time','Amount','Class'], axis=1))
-
 ```
 
 ## Artificial Neural Network
@@ -238,6 +244,86 @@ run_model2 = classifier2.fit(X_train2, y_train2,
                            verbose = 1,
                            validation_data = (X_validate2, y_validate2))
 ```
+
+## Evaluasi Statistik Teknik Under Sampling
+
+#### Visualisasi akurasi model
+```python
+plt.plot(run_model2.history['accuracy'])
+plt.plot(run_model2.history['val_accuracy'])
+plt.title('model accuracy')
+plt.xlabel('accuracy')
+plt.ylabel('epoch')
+plt.legend(['train','validate'], loc ='upper left')
+plt.show()
+```
+![akurasi under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/akurasi%20under%20sampling.png)
+#### Visualisasi Loss
+```python
+plt.plot(run_model2.history['loss'])
+plt.plot(run_model2.history['val_loss'])
+plt.title('model loss')
+plt.xlabel('loss')
+plt.ylabel('epoch')
+plt.legend(['train','validate'], loc ='upper left')
+plt.show()
+```
+![Loss undersampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/loss%20under%20sampling.png)
+#### Akurasi
+```python
+evaluasi2 = classifier2.evaluate(X_test2,y_test2)
+print('akurasi:{:.2f}'.format(evaluasi2[1]*100))
+```
+>3/3 [==============================] - 0s 5ms/step - loss: 0.1846 - accuracy: 0.9213
+
+>akurasi:92.13
+
+#### Heatmap Akurasi Model
+```python
+hasil_prediksi2 = classifier2.predict_classes(X_test2)
+
+cm2 = confusion_matrix(y_test2, hasil_prediksi2)
+cm_label2 = pd.DataFrame(cm2, columns=np.unique(y_test2),index=np.unique(y_test2))
+cm_label2.index.name = 'aktual'
+cm_label2.columns.name = 'prediksi'
+
+sns.heatmap(cm_label2, annot=True, Cmap='Reds', fmt='g')
+```
+![Heat map under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/heat%20map%20under%20sampling.png)
+
+#### Ringkasan Hasil
+ ```python
+print(classification_report(y_test2, hasil_prediksi2,target_names=target_names))
+ ```
+		            precision    recall  f1-score   support
+	      class0       0.85      1.00      0.92        41
+	      class1       1.00      0.85      0.92        48
+	    accuracy                           0.92        89
+	   macro avg       0.93      0.93      0.92        89
+	weighted avg       0.93      0.92      0.92        89
+
+
+## Pengujian Model Awal dan Under Sampling
+```python
+hasil_prediksi3 = classifier2.predict_classes(X_test_final)
+cm3 = confusion_matrix(y_test_final, hasil_prediksi3)
+cm_label3 = pd.DataFrame(cm3, columns=np.unique(y_test_final),index=np.unique(y_test_final))
+cm_label3.index.name = 'aktual'
+cm_label3.columns.name = 'prediksi'
+sns.heatmap(cm_label3, annot=True, Cmap='Reds', fmt='g')
+```
+![Model awal vs Under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/pengujian%20model%20standart%20dan%20under%20sampling.png)
+
+#### Hasil Perbandingan
+	              precision    recall  f1-score   support
+	      class0       0.95      0.96      0.96        56
+	      class1       0.95      0.93      0.94        43
+	    accuracy                           0.95        99
+	   macro avg       0.95      0.95      0.95        99
+	weighted avg       0.95      0.95      0.95        99
+
+
+
 ## Tentang Penulis
 ![albara bimakasa](https://raw.githubusercontent.com/albarabimakasa/albarabimakasa/main/merbabu.jpeg)
 #### hi, saya Albara saya seorang mahasiswa teknik industri universitas islam indonesia yang memiliki ketertarikan pada bidang data science. jika anda ingin menghubungi saya anda dapat mengirim pesan pada link berikut.
