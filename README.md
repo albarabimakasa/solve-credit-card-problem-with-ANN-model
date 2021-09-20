@@ -14,14 +14,14 @@
 - [Evaluasi Statistik](#evaluasi-statistik)
 - [Teknik Under Sampling](#teknik-under-sampling)
 - [Evaluasi Statistik Teknik Under Sampling](#Evaluasi-statistik-teknik-under-sampling)
-- [Pengujian Model Awal dan Under Sampling](pengujian-model-awal-dan-under-sampling)
+- [Pengujian Model Awal dan Under Sampling](#pengujian-model-awal-dan-under-sampling)
 - [Tentang Penulis](#tentang-penulis)
 
 ---
 
 ## Deskripsi
 
-Proyek ini memiliki objektif untuk membantu perusahaan fintech untuk mengklasifikasi member yang akan mendapatkan promo menggunakan logistic regression. Data yang diberikan adalah data mentah berupa csv yang merupakan data dari 50.000 user dengan 12 variabel first_open, dayofweek, hour, liked dll. member yang akan mendapatkan promo adalah member yang besar kemungkinan tidak langganan layanan *premium*. ini dimaksudkan dengan adanya promo maka mereka akan tertarik untuk menggunakan fitur *premium* 
+Proyek ini memiliki objektif untuk membantu perusahaan kartu kredit untuk mendeteksi nasabah yang berpotensi melakukan *fraud*. Perusahaan memberikan data [csv](https://biy.ly39g52lF) yang merupakan data dari 280.000 user dengan 29 variabel independen dan 1 variabel dependen. hasil akhir yang diinginkan adalah model yang bisa mengklasifikasi ya/tidak antara nasabah yang kemungkinan melakukan fraud.
 
 #### Technologies
 
@@ -49,17 +49,21 @@ data_ku.shape
 
 ```
 #### Features Engineering
-Standarisasi Kolom *Amount*
+Standarisasi Kolom *Amount* dengan metode "StadardScaler"
 ```python
 from sklearn.preprocessing import StandardScaler
 data_ku['standar'] = StandardScaler().fit_transform(data_ku['Amount'].values.reshape(-1,1))
 ```
-#### Features Selection
+standarisasi dimaksudkan untuk memudahkan komputasi
 
+#### Features Selection
+Membuang variabel yang tidak digunakan.
 ```python
 y = np.array(data_ku.iloc[:,-2])
 X = np.array(data_ku.drop(['Time','Amount','Class'], axis=1))
 ```
+y = variabel dependen
+x = variabel independen
 
 ## Artificial Neural Network
 Untuk mentraining model yang bertujuan untuk mendeteksi user yang fraud kita menggunakan [Artificial Neural Network ](https://id.wikipedia.org/wiki/Jaringan_saraf_tiruan). Metode ini merupakan sistem adaptif yang dapat mengubah strukturnya untuk memecahkan masalah berdasarkan informasi eksternal maupun internal yang mengalir melalui jaringan tersebut.l.
@@ -97,7 +101,7 @@ plot_model(classifier, to_file ='model_ann.png', show_shapes=True,show_layer_nam
 ```
 ![model ann](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/model%20ann.png) 
 
-#### Menjalankan Model
+#### Proses Training Model ANN
 ```python
 run_model = classifier.fit(X_train, y_train,
                            batch_size = 32,
@@ -154,13 +158,15 @@ plt.show()
 ![confussion matrix](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/loss.png)
 
 
-#### Melihat Akurasi
+#### Menguji pada data X_test dan y_test 
+Data X_test dan y_test merupakan data yang belum pernah dilihat oleh model ANN.
 ```python
 evaluasi = classifier.evaluate(X_test,y_test)
 print('akurasi:{:.2f}'.format(evaluasi[1]*100))
 ```
 >1781/1781 [==============================] - 1s 823us/step-loss: 0.0023 - accuracy: 0.9994
 akurasi:99.94
+
 
 #### Visualisasi menggunakan Heat Map
 ```python
@@ -191,8 +197,10 @@ print(classification_report(y_test, hasil_prediksi,target_names=target_names))
 	macro avg         0.90      0.93      0.92     56962
 	weighted avg      1.00      1.00      1.00     56962
 
-## Teknik Under Sampling
+Pada tahap Menguji model ANN pada data X_test dan y_test didapat akurasi sebesar 99.94% sangat tinggi atau bisa dikatakan terlampau tinggi sehingga *too good to be truth*. Akurasi tersebut dapat dijelaskan dengan melihat nilai [F1-score](https://stevkarta.medium.com/membicarakan-precision-recall-dan-f1-score-e96d81910354#:~:text=Nilai%20terbaik%20F1%2DScore%20adalah,precision%20dan%20recall%20yang%20baik.) Nilai f1-score pada class0 memiliki nilai 1, sebuah nilai sempurna yang hampir mustahil terjadi. sedangkan untuk class1 pada angka 0.83. Sehingga dapat disimpulkan terjadi *imbalance dataset* yang disebabkan tidak seimbang data untuk yang melakukan kecurangan dan tidak. 
 
+## Teknik Under Sampling
+-   [**Undersampling**](https://socs.binus.ac.id/2019/12/26/imbalanced-dataset/)  menyeimbangkan dataset dengan mengurangi ukuran kelas yang berlimpah. Metode ini digunakan ketika jumlah data mencukupi. Dengan menjaga semua sampel di kelas langka dan secara acak memilih jumlah sampel yang sama di kelas berlimpah, dataset baru yang seimbang dapat diambil untuk pemodelan lebih lanjut. Pada intinya step-step yang berbeda dengan model awal adalah pada proses preprocessing data.
  
 #### Feature Engineering
 ```python
@@ -209,6 +217,7 @@ y_baru = np.array(data_baru.iloc[:,-2])
 X_baru = np.array(data_baru.drop(['Time','Amount','Class'], axis=1)) 
 ```
 #### Membagi Training Set dan Test Set
+
 ```python
 X_train2, X_test_final, y_train2, y_test_final = train_test_split(X_baru,y_baru,
                                                                   test_size = 0.1,
@@ -278,6 +287,8 @@ print('akurasi:{:.2f}'.format(evaluasi2[1]*100))
 
 >akurasi:92.13
 
+Pada model dengan teknik undersampling didapat akurasi sebesar 92.13 % sebuah model yang sudah cukup baik, tidak terlalu sempurna mendekati 100%.
+
 #### Heatmap Akurasi Model
 ```python
 hasil_prediksi2 = classifier2.predict_classes(X_test2)
@@ -302,8 +313,10 @@ print(classification_report(y_test2, hasil_prediksi2,target_names=target_names))
 	   macro avg       0.93      0.93      0.92        89
 	weighted avg       0.93      0.92      0.92        89
 
+Dengan menggunakan teknik undersampling didapat nilai F1-Score sebesar 0.92. Kita  mengabaikan nilai sempurna precission pada Class1 dan berfokus pada nilai F1-Score, ini dikarenakan  [F1-Score](https://en.wikipedia.org/wiki/F1_score) sendiri adalah harmonic mean dari precision dan recall.
 
-## Pengujian Model Awal dan Under Sampling
+## Pengujian Under Sampling pada X_test final
+Pengujian ini adalah menjalankan model pada data yang belumpernah dilihat sama sekali. atau data yang merepresentasikan dunia nyata.
 ```python
 hasil_prediksi3 = classifier2.predict_classes(X_test_final)
 cm3 = confusion_matrix(y_test_final, hasil_prediksi3)
@@ -322,7 +335,7 @@ sns.heatmap(cm_label3, annot=True, Cmap='Reds', fmt='g')
 	   macro avg       0.95      0.95      0.95        99
 	weighted avg       0.95      0.95      0.95        99
 
-
+Hasil pengujian lumayan baik meski tidak setinggi model yang awal akan tetapi model ini mempunyai kelebihan bisa di generalisir dalam artian dapat di aplikasikan kepada data data real yang tidak berat sebelah.  
 
 ## Tentang Penulis
 ![albara bimakasa](https://raw.githubusercontent.com/albarabimakasa/albarabimakasa/main/merbabu.jpeg)
@@ -331,4 +344,4 @@ sns.heatmap(cm_label3, annot=True, Cmap='Reds', fmt='g')
 - Twitter - [@albara_bimakasa](https://twitter.com/albara_bimakasa)
 - Email - [18522360@students.uii.ac.id]()
 
-[Back To The Top](#read-me-template)
+[Back To The Top](#deteksi-fraud-menggunakan-artificial-neural-network)
