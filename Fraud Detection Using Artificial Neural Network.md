@@ -1,43 +1,43 @@
-﻿# Deteksi Fraud Menggunakan Artificial Neural Network
+# Fraud Detection Using Artificial Neural Network
 
 ![Project Image](https://miro.medium.com/max/1200/0*_6WEDnZubsQfTMlY.png)
 
-> Mendeteksi nasabah yang mungkin melakukan kecurangan 
+> Detecting customers who may commit fraud
 
 ---
 
-### Daftar isi
+### Table of Contents
 
-- [Deskripsi](#description)
-- [Preprocessing Data](#preprocessing-data)
+- [Description](#description)
+- [Data Preprocessing](#preprocessing-data)
 - [Artificial Neural Network](#artificial-neural-network)
-- [Evaluasi Statistik](#evaluasi-statistik)
-- [Teknik Under Sampling](#teknik-under-sampling)
-- [Evaluasi Statistik Teknik Under Sampling](#Evaluasi-statistik-teknik-under-sampling)
-- [Pengujian Model Awal dan Under Sampling](#pengujian-model-awal-dan-under-sampling)
-- [Tentang Penulis](#tentang-penulis)
+- [Statistical Evaluation](#statistical-evaluation)
+- [Under Sampling Technique](#under-sampling-technique)
+- [Statistical Evaluation of Under Sampling Technique](#statistical-evaluation-of-under-sampling-technique)
+- [Initial Model Testing and Under Sampling](#initial-model-testing-and-under-sampling)
+- [About Author](#about-author)
 
 ---
 
-## Deskripsi
+## Description
 
-Proyek ini memiliki objektif untuk membantu perusahaan kartu kredit untuk mendeteksi nasabah yang berpotensi melakukan *fraud*. Perusahaan memberikan data [csv](https://biy.ly39g52lF) yang merupakan data dari 280.000 user dengan 29 variabel independen dan 1 variabel dependen. hasil akhir yang diinginkan adalah model yang bisa mengklasifikasi ya/tidak antara nasabah yang kemungkinan melakukan fraud.
+This project has the objective to help credit card companies detect customers who are potentially committing *fraud*. The company provides [csv](https://biy.ly39g52lF) data which is data from 280,000 users with 29 independent variables and 1 dependent variable. The desired end result is a model that can classify yes/no between customers who are likely to commit fraud.
 
 #### Technologies
 
 - Python
 - Artificial Neural Network
-- Teknik Under Sampling
+- Under Sampling Technique
 
-[Back To The Top](#Klasifikasi-menggunakan-logistic-regression)
+[Back To The Top](#Classification-using-logistic-regression)
 
 ---
 ## Preprocessing Data
 
 #### Features Engineering & Selection
-[**Feature Engineering**](http://belajardatascience.blogspot.com/2018/05/feature-engineering.html) adalah bagaimana kita menggunakan pengetahuan kita dalam membuat *feature* baru atau sekedar memodifikasinya sedangkan **Features Selection** adalah proses memilih features baik menggabungkan beberapa *feature* atau membuang sebagian *feature*. Kedua metode dimaksudkan agar model machine learning dapat bekerja lebih akurat dalam memecahkan masalah.
+[**Feature Engineering**](http://belajardatascience.blogspot.com/2018/05/feature-engineering.html) is how we use our knowledge in creating new *features* or simply modifying them while **Features Selection** is the process of selecting features either combining several *features* or removing some *features*. Both methods are intended so that machine learning models can work more accurately in solving problems.
 
-#### Mengimpor *Library* dan data
+#### Importing *Libraries* and data
 ```python
 import numpy as np
 import pandas as pd
@@ -49,27 +49,26 @@ data_ku.shape
 
 ```
 #### Features Engineering
-Standarisasi Kolom *Amount* dengan metode "StadardScaler"
+Standardizing the *Amount* Column with the "StadardScaler" method
 ```python
 from sklearn.preprocessing import StandardScaler
 data_ku['standar'] = StandardScaler().fit_transform(data_ku['Amount'].values.reshape(-1,1))
 ```
-standarisasi dimaksudkan untuk memudahkan komputasi
+standardization is intended to facilitate computation
 
 #### Features Selection
-Membuang variabel yang tidak digunakan.
+Removing unused variables. 
 ```python
 y = np.array(data_ku.iloc[:,-2])
 X = np.array(data_ku.drop(['Time','Amount','Class'], axis=1))
 ```
-y = variabel dependen
-x = variabel independen
+y = dependent variable
+x = independent variable
 
 ## Artificial Neural Network
-Untuk mentraining model yang bertujuan untuk mendeteksi user yang fraud kita menggunakan [Artificial Neural Network ](https://id.wikipedia.org/wiki/Jaringan_saraf_tiruan). Metode ini merupakan sistem adaptif yang dapat mengubah strukturnya untuk memecahkan masalah berdasarkan informasi eksternal maupun internal yang mengalir melalui jaringan tersebut.l.
+To train a model that aims to detect fraudulent users, we use [Artificial Neural Network ](https://id.wikipedia.org/wiki/Jaringan_saraf_tiruan). This method is an adaptive system that can change its structure to solve problems based on external and internal information flowing through the network.l.
 
-#### Membagi Training Set dan Test Set
-
+#### Split Training Set and Test Set 
 ```python
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = 0.2 ,
@@ -79,7 +78,7 @@ X_train, X_validate, y_train, y_validate = train_test_split(X_train,y_train,
                                                             test_size=0.2,
                                                             random_state=111)
 ```
-#### Membangun Model 
+#### Building a Model 
 ```python
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
@@ -94,14 +93,13 @@ classifier.compile(optimizer='adam', loss='binary_crossentropy',
                    metrics=('accuracy'))
 classifier.summary()
 ```
-#### Visualisasi Model
+#### Model Visualization
 ```python
 from keras.utils.vis_utils import plot_model
 plot_model(classifier, to_file ='model_ann.png', show_shapes=True,show_layer_names=False)
 ```
 ![model ann](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/model%20ann.png) 
-
-#### Proses Training Model ANN
+#### ANN Model Training Process 
 ```python
 run_model = classifier.fit(X_train, y_train,
                            batch_size = 32,
@@ -125,13 +123,13 @@ run_model = classifier.fit(X_train, y_train,
 >Epoch 5/5
 5697/5697 [] - 15s 3ms/step - loss: 0.0025 - accuracy: 0.9995 - val_loss: 0.0029 - val_accuracy: 0.9994
 
-[Back To The Top](#Klasifikasi-menggunakan-logistic-regression)
+[Back To The Top](#Classification-using-logistic-regression)
 
 ---
 
-## Evaluasi Statistik
+## Statistical Evaluation
 
-#### Visualisasi akurasi
+#### Accuracy visualization
 ```python
 plt.plot(run_model.history['accuracy'])
 plt.plot(run_model.history['val_accuracy'])
@@ -141,11 +139,11 @@ plt.ylabel('epoch')
 plt.legend(['train','validate'], loc ='upper left')
 plt.show()
 ```
-![akurasi](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/akurasi.png)
+![accuracy](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/akurasi.png)
 
 
 
-####  #Visualisasi Loss
+#### #Loss Visualization
 ```python
 plt.plot(run_model.history['loss'])
 plt.plot(run_model.history['val_loss'])
@@ -153,37 +151,35 @@ plt.title('model loss')
 plt.xlabel('loss')
 plt.ylabel('epoch')
 plt.legend(['train','validate'], loc ='upper left')
-plt.show() 
+plt.show()
 ```
-![confussion matrix](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/loss.png)
+![confusion matrix](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/loss.png)
 
-
-#### Menguji pada data X_test dan y_test 
-Data X_test dan y_test merupakan data yang belum pernah dilihat oleh model ANN.
+#### Testing on X_test and y_test data
+X_test and y_test data y_test is data that has never been seen by the ANN model. 
 ```python
-evaluasi = classifier.evaluate(X_test,y_test)
-print('akurasi:{:.2f}'.format(evaluasi[1]*100))
+evaluate = classifier.evaluate(X_test,y_test)
+print('accuracy:{:.2f}'.format(evaluate[1]*100))
 ```
->1781/1781 [==============================] - 1s 823us/step-loss: 0.0023 - accuracy: 0.9994
-akurasi:99.94
+>1781/1781 [====== =========================] - 1s 823us/step-loss: 0.0023 - accuracy: 0.9994
+accuracy:99.94
 
-
-#### Visualisasi menggunakan Heat Map
+#### Visualization using Heat Map
 ```python
-hasil_prediksi = classifier.predict_classes(X_test)
+prediction_result = classifier.predict_classes(X_test)
 
 from sklearn.metrics import confusion_matrix
-cm = confusion_matrix(y_test, hasil_prediksi)
+cm = confusion_matrix(y_test, prediction_result)
 cm_label = pd.DataFrame(cm, columns=np.unique(y_test),index=np.unique(y_test))
-cm_label.index.name = 'aktual'
-cm_label.columns.name = 'prediksi'
+cm_label.index.name = 'actual'
+cm_label.columns.name = 'prediction'
 
 sns.heatmap(cm_label, annot=True, Cmap='Reds', fmt='g')
 
-``` 
-![heatmap jomplang](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/heat%20map%20jomplang.png)
+```
+![jomplang heatmap](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/heat%20map%20jomplang.png)
 
-#### Evaluasi
+#### Evaluation
 ```python
 from sklearn.metrics import classification_report
 jumlah_kategori = 2
@@ -197,29 +193,28 @@ print(classification_report(y_test, hasil_prediksi,target_names=target_names))
 	macro avg         0.90      0.93      0.92     56962
 	weighted avg      1.00      1.00      1.00     56962
 
-Pada tahap Menguji model ANN pada data X_test dan y_test didapat akurasi sebesar 99.94% sangat tinggi atau bisa dikatakan terlampau tinggi sehingga *too good to be truth*. Akurasi tersebut dapat dijelaskan dengan melihat nilai [F1-score](https://stevkarta.medium.com/membicarakan-precision-recall-dan-f1-score-e96d81910354#:~:text=Nilai%20terbaik%20F1%2DScore%20adalah,precision%20dan%20recall%20yang%20baik.) Nilai f1-score pada class0 memiliki nilai 1, sebuah nilai sempurna yang hampir mustahil terjadi. sedangkan untuk class1 pada angka 0.83. Sehingga dapat disimpulkan terjadi *imbalance dataset* yang disebabkan tidak seimbang data untuk yang melakukan kecurangan dan tidak. 
+At the stage of testing the ANN model on the X_test data and y_test obtained an accuracy of 99.94% which is very high or can be said to be too high so that it is *too good to be truth*. This accuracy can be explained by looking at the [F1-score](https://stevkarta.medium.com/membicarakan-precision-recall-dan-f1-score-e96d81910354#:~:text=Nilai%20terbaik%20F1%2DScore%20adalah,precision%20dan%20recall%20yang%20baik.) The f1-score value in class0 has a value of 1, a perfect value that is almost impossible to happen. while for class1 it is at 0.83. So it can be concluded that there is an *imbalance dataset* which is caused by an imbalance data for those who do cheating and those who do not.
 
-## Teknik Under Sampling
--   [**Undersampling**](https://socs.binus.ac.id/2019/12/26/imbalanced-dataset/)  menyeimbangkan dataset dengan mengurangi ukuran kelas yang berlimpah. Metode ini digunakan ketika jumlah data mencukupi. Dengan menjaga semua sampel di kelas langka dan secara acak memilih jumlah sampel yang sama di kelas berlimpah, dataset baru yang seimbang dapat diambil untuk pemodelan lebih lanjut. Pada intinya step-step yang berbeda dengan model awal adalah pada proses preprocessing data.
- 
+## Under Sampling Technique
+- [**Undersampling**](https://socs.binus.ac.id/2019/12/26/imbalanced-dataset/) balances the dataset by reducing the size abundant class. This method is used when the amount of data is sufficient. By keeping all samples in the rare class and randomly selecting the same number of samples in the abundant class, a new balanced dataset can be taken for further modeling. In essence, the steps that are different from the initial model are in the data preprocessing process.
+
 #### Feature Engineering
 ```python
-index_fraud = np.array(data_ku[data_ku.Class == 1].index)
+index_fraud = np.array(my_data[my_data.Class == 1].index)
 n_fraud = len(index_fraud)
-index_normal = np.array(data_ku[data_ku == 0].index)
-index_data_normal = np.random.choice(index_normal, n_fraud, replace=False )
+index_normal = np.array(my_data[my_data == 0].index) index_data_normal = np.random.choice(index_normal, n_fraud, replace=False )
 index_data_baru = np.concatenate([index_fraud, index_data_normal])
 data_baru = data_ku.iloc[index_data_baru,:]
 ```
 #### Feature Selection
-```python
+``` python
 y_baru = np.array(data_baru.iloc[:,-2])
-X_baru = np.array(data_baru.drop(['Time','Amount','Class'], axis=1)) 
+X_baru = np.array(data_baru.drop(['Time','Amount','Class'], axis=1))
 ```
-#### Membagi Training Set dan Test Set
+#### Divide Training Set and Test Set
 
 ```python
-X_train2, X_test_final, y_train2, y_test_final = train_test_split(X_baru,y_baru,
+X_train2, X_test_final, y_train2, y_test_final = train_test_split(X_new,y_new,
                                                                   test_size = 0.1,
                                                                   random_state=111)
 
@@ -232,7 +227,7 @@ X_train2, X_validate2, y_train2, y_validate2 = train_test_split(X_train2,y_train
                                                             test_size=0.2,
                                                             random_state=111)
 ```
-#### Membuat kerangka Model
+#### Create a Model framework
 ```python
 classifier2 = Sequential()
 classifier2.add(Dense(units=16, input_dim=29, activation='relu'))
@@ -245,7 +240,7 @@ classifier2.compile(optimizer='adam', loss='binary_crossentropy',
                    metrics=('accuracy'))
 classifier.summary()
 ```
-#### Menjalankan Model 
+#### Running the Model
 ```python
 run_model2 = classifier2.fit(X_train2, y_train2,
                            batch_size = 8,
@@ -254,20 +249,20 @@ run_model2 = classifier2.fit(X_train2, y_train2,
                            validation_data = (X_validate2, y_validate2))
 ```
 
-## Evaluasi Statistik Teknik Under Sampling
 
-#### Visualisasi akurasi model
+## Statistical Evaluation of Under Sampling Techniques
+
+#### Visualization of model accuracy
 ```python
 plt.plot(run_model2.history['accuracy'])
-plt.plot(run_model2.history['val_accuracy'])
-plt.title('model accuracy')
+plt.plot(run_model2.history['val_accuracy']) plt.title('model accuracy')
 plt.xlabel('accuracy')
 plt.ylabel('epoch')
 plt.legend(['train','validate'], loc ='upper left')
-plt.show()
+plt.show( )
 ```
-![akurasi under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/akurasi%20under%20sampling.png)
-#### Visualisasi Loss
+![accuracy under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/akurasi%20under%20sampling.png)
+#### Visualization Losses
 ```python
 plt.plot(run_model2.history['loss'])
 plt.plot(run_model2.history['val_loss'])
@@ -278,31 +273,31 @@ plt.legend(['train','validate'], loc ='upper left')
 plt.show()
 ```
 ![Loss undersampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/loss%20under%20sampling.png)
-#### Akurasi
+#### Accuracy
 ```python
-evaluasi2 = classifier2.evaluate(X_test2,y_test2)
-print('akurasi:{:.2f}'.format(evaluasi2[1]*100))
+evaluate2 = classifier2.evaluate(X_test2,y_test2)
+print('accuracy:{:.2f}'.format(evaluation2[1]*100))
 ```
->3/3 [==============================] - 0s 5ms/step - loss: 0.1846 - accuracy: 0.9213
+>3/3 [============ ==================] - 0s 5ms/step - loss: 0.1846 - accuracy: 0.9213
 
->akurasi:92.13
+>accuracy:92.13
 
-Pada model dengan teknik undersampling didapat akurasi sebesar 92.13 % sebuah model yang sudah cukup baik, tidak terlalu sempurna mendekati 100%.
+In the model with the undersampling technique, an accuracy of 92.13% was obtained for a model that had good enough, not too perfect approaching 100%.
 
-#### Heatmap Akurasi Model
+#### Model Accuracy Heatmap
 ```python
 hasil_prediksi2 = classifier2.predict_classes(X_test2)
 
-cm2 = confusion_matrix(y_test2, hasil_prediksi2)
-cm_label2 = pd.DataFrame(cm2, columns=np.unique(y_test2),index=np.unique(y_test2))
-cm_label2.index.name = 'aktual'
+cm2 = confusion_matrix(y_test2,hasil_prediksi2)
+cm_label2 = pd.DataFrame(cm2, columns=np.unique(y_test2),index=np.unique( y_test2))
+cm_label2.index.name = 'actual'
 cm_label2.columns.name = 'prediksi'
 
 sns.heatmap(cm_label2, annot=True, Cmap='Reds', fmt='g')
 ```
 ![Heat map under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/heat%20map%20under%20sampling.png)
 
-#### Ringkasan Hasil
+#### Summary of Results
  ```python
 print(classification_report(y_test2, hasil_prediksi2,target_names=target_names))
  ```
@@ -313,21 +308,20 @@ print(classification_report(y_test2, hasil_prediksi2,target_names=target_names))
 	   macro avg       0.93      0.93      0.92        89
 	weighted avg       0.93      0.92      0.92        89
 
-Dengan menggunakan teknik undersampling didapat nilai F1-Score sebesar 0.92. Kita  mengabaikan nilai sempurna precission pada Class1 dan berfokus pada nilai F1-Score, ini dikarenakan  [F1-Score](https://en.wikipedia.org/wiki/F1_score) sendiri adalah harmonic mean dari precision dan recall.
 
-## Pengujian Under Sampling pada X_test final
-Pengujian ini adalah menjalankan model pada data yang belumpernah dilihat sama sekali. atau data yang merepresentasikan dunia nyata.
+## Under Sampling Testing on final X_test
+This test is running the model on data that has never been seen before. or data that represents the real world. 
 ```python
-hasil_prediksi3 = classifier2.predict_classes(X_test_final)
-cm3 = confusion_matrix(y_test_final, hasil_prediksi3)
+prediction_result3 = classifier2.predict_classes(X_test_final)
+cm3 = confusion_matrix(y_test_final, predicted_results3)
 cm_label3 = pd.DataFrame(cm3, columns=np.unique(y_test_final),index=np.unique(y_test_final))
-cm_label3.index.name = 'aktual'
-cm_label3.columns.name = 'prediksi'
+cm_label3.index.name = 'actual'
+cm_label3.columns.name = 'prediction'
 sns.heatmap(cm_label3, annot=True, Cmap='Reds', fmt='g')
 ```
-![Model awal vs Under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/pengujian%20model%20standart%20dan%20under%20sampling.png)
+![Early model vs Under sampling](https://raw.githubusercontent.com/albarabimakasa/solve-credit-card-problem-with-ANN-model/main/picture/pengujian%20model%20standart%20dan%20under%20sampling.png)
 
-#### Hasil Perbandingan
+#### Comparison Results
 	              precision    recall  f1-score   support
 	      class0       0.95      0.96      0.96        56
 	      class1       0.95      0.93      0.94        43
@@ -335,13 +329,13 @@ sns.heatmap(cm_label3, annot=True, Cmap='Reds', fmt='g')
 	   macro avg       0.95      0.95      0.95        99
 	weighted avg       0.95      0.95      0.95        99
 
-Hasil pengujian lumayan baik meski tidak setinggi model yang awal akan tetapi model ini mempunyai kelebihan bisa di generalisir dalam artian dapat di aplikasikan kepada data data real yang tidak berat sebelah.  
+The test results are quite good although not as high as the initial model, but this model has advantages can be generalized in the sense that it can be applied to real data that is not biased.
 
-## Tentang Penulis
+## About the Author
 ![albara bimakasa](https://raw.githubusercontent.com/albarabimakasa/albarabimakasa/main/merbabu.jpeg)
-#### hi, saya Albara saya seorang mahasiswa teknik industri universitas islam indonesia yang memiliki ketertarikan pada bidang data science. jika anda ingin menghubungi saya anda dapat mengirim pesan pada link berikut.
+#### Hi, I'm Albara, I'm an industrial engineering student at the Islamic University of Indonesia who is interested in data science field. if you want to contact me you can send a message on the following link.
 
 - Twitter - [@albara_bimakasa](https://twitter.com/albara_bimakasa)
-- Email - [18522360@students.uii.ac.id]()
+- Email - [18522360@students.uii.ac.id]( )
 
-[Back To The Top](#deteksi-fraud-menggunakan-artificial-neural-network)
+[Back To The Top](#fraud-detection-using-artificial-neural-network)
