@@ -38,6 +38,9 @@ This project has the objective to help credit card companies detect customers wh
 [**Feature Engineering**](http://belajardatascience.blogspot.com/2018/05/feature-engineering.html) is how we use our knowledge in creating new *features* or simply modifying them while **Features Selection** is the process of selecting features either combining several *features* or removing some *features*. Both methods are intended so that machine learning models can work more accurately in solving problems.
 
 #### Importing *Libraries* and data
+
+You can download the data here [Credit card data](https://drive.google.com/file/d/1daJzolHqXyhfUZj2Mo2Ys3bDEh6S1ng4/view?usp=drive_link)
+
 ```python
 import numpy as np
 import pandas as pd
