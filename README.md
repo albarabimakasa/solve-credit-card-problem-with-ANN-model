@@ -15,7 +15,7 @@
 - [Under Sampling Technique](#under-sampling-technique)
 - [Statistical Evaluation of Under Sampling Technique](#statistical-evaluation-of-undersampling-technique)
 - [Under Sampling Testing on final X_test](#Under-Sampling-Testing-on-final-X_test)
-- [About Author](#about-author)
+- [About Author](#About-the-Author)
 
 ---
 
