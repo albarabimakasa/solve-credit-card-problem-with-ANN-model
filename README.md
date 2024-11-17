@@ -13,7 +13,7 @@
 - [Artificial Neural Network](#artificial-neural-network)
 - [Statistical Evaluation](#statistical-evaluation)
 - [Under Sampling Technique](#under-sampling-technique)
-- [Statistical Evaluation of Under Sampling Technique](#statistical-evaluation-of-under-sampling-technique)
+- [Statistical Evaluation of Under Sampling Technique](#statistical-evaluation-of-undersampling-technique)
 - [Under Sampling Testing on final X_test](#Under-Sampling-Testing-on-final-X_test)
 - [About Author](#about-author)
 
@@ -29,7 +29,7 @@ This project has the objective to help credit card companies detect customers wh
 - Artificial Neural Network
 - Under Sampling Technique
 
-[Back To The Top](#Classification-using-logistic-regression)
+[Back To The Top](#Fraud-Detection-Using-Artificial-Neural-Network)
 
 ---
 ## Preprocessing Data
@@ -123,7 +123,7 @@ run_model = classifier.fit(X_train, y_train,
 >Epoch 5/5
 5697/5697 [] - 15s 3ms/step - loss: 0.0025 - accuracy: 0.9995 - val_loss: 0.0029 - val_accuracy: 0.9994
 
-[Back To The Top](#Classification-using-logistic-regression)
+
 
 ---
 
@@ -250,7 +250,7 @@ run_model2 = classifier2.fit(X_train2, y_train2,
 ```
 
 
-## Statistical Evaluation of Under Sampling Techniques
+## statistical evaluation of undersampling technique
 
 #### Visualization of model accuracy
 ```python
